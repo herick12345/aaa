@@ -20,21 +20,6 @@ services:
       timeout: 20s
       retries: 10
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: sistema-escoteiro-phpmyadmin
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_USER: aluno
-      PMA_PASSWORD: aluno
-      MYSQL_ROOT_PASSWORD: senhaRoot
-    ports:
-      - "8081:80"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    restart: unless-stopped
 
 volumes:
   mysql_data:
