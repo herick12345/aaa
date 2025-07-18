@@ -58,7 +58,6 @@ docker-compose ps
 
 ### 5. Acessar o Sistema
 - **Aplicação Web**: http://localhost:8080
-- **phpMyAdmin**: http://localhost:8081
 - **API REST**: http://localhost:8080/api
 - **Documentação API**: http://localhost:8080/swagger-ui.html
 
