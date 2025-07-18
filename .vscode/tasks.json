@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Iniciar Docker MySQL",
+            "label": "Iniciar MySQL (Temporário)",
             "type": "shell",
-            "command": "docker-compose up -d",
+            "command": "docker run -d --rm -p 3306:3306 -e MYSQL_ROOT_PASSWORD=senhaRoot -e MYSQL_DATABASE=bcd -e MYSQL_USER=aluno -e MYSQL_PASSWORD=aluno -e MYSQL_ROOT_HOST='%' --name meumysql mysql/mysql-server:latest",
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -15,9 +15,22 @@
             "problemMatcher": []
         },
         {
-            "label": "Parar Docker MySQL",
+            "label": "Iniciar MySQL (Persistente)",
             "type": "shell",
-            "command": "docker-compose down",
+            "command": "docker run -d --rm -p 3306:3306 -e MYSQL_ROOT_PASSWORD=senhaRoot -e MYSQL_DATABASE=bcd -e MYSQL_USER=aluno -e MYSQL_PASSWORD=aluno -e MYSQL_ROOT_HOST='%' -v $(pwd)/db_data:/var/lib/mysql --name meumysql mysql/mysql-server:latest",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Parar MySQL",
+            "type": "shell",
+            "command": "docker stop meumysql",
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -67,19 +80,30 @@
             "problemMatcher": []
         },
         {
-            "label": "Ambiente Completo",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Iniciar Docker MySQL",
-                "Spring Boot Run"
-            ],
+            "label": "Ver Logs MySQL",
+            "type": "shell",
+            "command": "docker logs -f meumysql",
             "group": "build",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
                 "focus": false,
                 "panel": "shared"
-            }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Conectar MySQL CLI",
+            "type": "shell",
+            "command": "docker exec -it meumysql mysql -u aluno -p bcd",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "problemMatcher": []
         }
     ]
 }

@@ -54,6 +54,7 @@ tasks.named('test') {
 
 bootRun {
 	environment 'spring.output.ansi.console-available', true
+	environment 'spring.output.ansi.console-available', true
 	// Configurações para desenvolvimento
 	jvmArgs = [
 		'-Dspring.profiles.active=dev',

@@ -23,7 +23,7 @@ Sistema de gerenciamento para o ramo lobinho do movimento escoteiro, desenvolvid
 
 ### Pré-requisitos
 - Java 17+
-- Docker e Docker Compose
+- Docker
 - VSCode (recomendado)
 
 ### 1. Clonar o Repositório
@@ -32,21 +32,28 @@ git clone <url-do-repositorio>
 cd sistema-escoteiro
 ```
 
-### 2. Configurar VSCode (Opcional)
+### 2. Iniciar o Servidor MySQL
+Execute o comando Docker conforme especificado na disciplina:
+
+```bash
+# Comando básico (dados temporários)
+docker run -d --rm -p 3306:3306 -e MYSQL_ROOT_PASSWORD=senhaRoot \
+-e MYSQL_DATABASE=bcd -e MYSQL_USER=aluno -e MYSQL_PASSWORD=aluno \
+-e MYSQL_ROOT_HOST='%' --name meumysql mysql/mysql-server:latest
+
+# Comando com persistência de dados (recomendado)
+docker run -d --rm -p 3306:3306 -e MYSQL_ROOT_PASSWORD=senhaRoot \
+-e MYSQL_DATABASE=bcd -e MYSQL_USER=aluno -e MYSQL_PASSWORD=aluno \
+-e MYSQL_ROOT_HOST='%' -v $(pwd)/db_data:/var/lib/mysql \
+--name meumysql mysql/mysql-server:latest
+```
+
+### 3. Configurar VSCode (Opcional)
 Instale as extensões recomendadas:
 - Java Extension Pack
 - Spring Boot Extension Pack
 - SQLTools
 - SQLTools MySQL Driver
-
-### 3. Iniciar o Banco de Dados
-```bash
-# Iniciar MySQL e phpMyAdmin
-docker-compose up -d
-
-# Verificar se os containers estão rodando
-docker-compose ps
-```
 
 ### 4. Executar a Aplicação
 ```bash
@@ -73,7 +80,7 @@ O projeto já inclui configurações do SQLTools no `.vscode/settings.json`:
             "name": "Sistema Escoteiro - MySQL",
             "driver": "MySQL",
             "server": "localhost",
-            "port": 3333,
+            "port": 3306,
             "database": "bcd",
             "username": "aluno",
             "password": "aluno"
@@ -90,7 +97,7 @@ O projeto já inclui configurações do SQLTools no `.vscode/settings.json`:
 
 ### Credenciais do Banco
 - **Host**: localhost
-- **Porta**: 3333
+- **Porta**: 3306 (padrão MySQL)
 - **Database**: bcd
 - **Usuário**: aluno
 - **Senha**: aluno
@@ -119,17 +126,19 @@ O projeto já inclui configurações do SQLTools no `.vscode/settings.json`:
 
 ### Docker
 ```bash
-# Iniciar ambiente
-docker-compose up -d
+# Iniciar MySQL (dados temporários)
+docker run -d --rm -p 3306:3306 -e MYSQL_ROOT_PASSWORD=senhaRoot \
+-e MYSQL_DATABASE=bcd -e MYSQL_USER=aluno -e MYSQL_PASSWORD=aluno \
+-e MYSQL_ROOT_HOST='%' --name meumysql mysql/mysql-server:latest
 
-# Parar ambiente
-docker-compose down
+# Parar MySQL
+docker stop meumysql
 
-# Ver logs
-docker-compose logs -f mysql
+# Ver logs do MySQL
+docker logs -f meumysql
 
-# Resetar dados (CUIDADO!)
-docker-compose down -v
+# Conectar via linha de comando
+docker exec -it meumysql mysql -u aluno -p bcd
 ```
 
 ### Gradle
@@ -143,18 +152,14 @@ docker-compose down -v
 # Executar testes
 ./gradlew test
 
-# Verificar Docker
-./gradlew checkDocker
-
-# Ambiente completo
-./gradlew startDev
+# Executar com logs coloridos
+./gradlew bootRun
 ```
 
 ### VSCode Tasks
 - `Ctrl+Shift+P` → "Tasks: Run Task"
-- **Iniciar Docker MySQL**
 - **Spring Boot Run**
-- **Ambiente Completo**
+- **Gradle Build**
 
 ## 📱 Interface Web
 
@@ -190,21 +195,22 @@ O sistema vem com dados pré-carregados:
 ### Erro de Conexão com MySQL
 ```bash
 # Verificar se o container está rodando
-docker-compose ps
+docker ps | grep meumysql
 
 # Reiniciar o MySQL
-docker-compose restart mysql
+docker restart meumysql
 
 # Ver logs do MySQL
-docker-compose logs mysql
+docker logs meumysql
 ```
 
-### Erro de Porta em Uso
+### Erro de Porta 3306 em Uso
 ```bash
-# Verificar processos na porta 3333
-lsof -i :3333
+# Verificar processos na porta 3306
+lsof -i :3306
 
-# Ou alterar a porta no docker-compose.yml
+# Parar MySQL local se estiver rodando
+sudo systemctl stop mysql
 ```
 
 ### Problemas com Java/Gradle
